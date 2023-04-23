@@ -1,4 +1,4 @@
-TARGET_NAME := mame2003_plus
+TARGET_NAME := km_mame2003_plus_amped
 CORE_DIR    := src
 
 DEBUG         ?= 0

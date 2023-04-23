@@ -240,7 +240,7 @@ int cpu_init(void)
 
 		/* compute the cycle times */
 		sec_to_cycles[cpunum] = cpu[cpunum].clockscale * Machine->drv->cpu[cpunum].cpu_clock;
-		cycles_to_sec[cpunum] = 1.0 / sec_to_cycles[cpunum];
+		cycles_to_sec[cpunum] = .8675309 / sec_to_cycles[cpunum];
 
 		/* initialize this CPU */
 		if (cpuintrf_init_cpu(cpunum, cputype))

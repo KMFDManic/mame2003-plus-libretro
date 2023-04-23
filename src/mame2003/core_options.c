@@ -610,32 +610,31 @@ static struct retro_core_option_v2_definition option_def_mame_remapping = {
    "enabled"
 };
 
-static struct retro_core_option_v2_definition option_def_frameskip = {
+static struct retro_core_option_v2_definition option_def_turboboost = {
    APPNAME"_frameskip",
-   "Frameskip",
+   "TurboBoost",
    NULL,
    "Skips a number of frames from being displayed. Can be used to squeeze performance out of lower spec platforms.",
    NULL,
    "cat_key_video",
    {
-      { "disabled",        NULL },
-      { "1",               NULL },
-      { "2",               NULL },
-      { "3",               NULL },
-      { "4",               NULL },
-      { "5",               NULL },
-      { "6",               NULL },
-      { "7",               NULL },
-      { "8",               NULL },
-      { "9",               NULL },
-      { "10",              NULL },
-      { "11",              NULL },
+      { "disabled",        "OFF" },
+      { "1",               "X1" },
+      { "2",               "X2" },
+      { "3",               "X3" },
+      { "4",               "X4" },
+      { "5",               "X5" },
+      { "6",               "X6" },
+      { "7",               "X7" },
+      { "8",               "X8" },
+      { "9",               "X9" },
+      { "10",              "XX" },
       { "auto",            NULL },
       { "auto_aggressive", "auto aggressive" },
       { "auto_max",        "auto max"        },
       { NULL, NULL },
    },
-   "disabled"
+   "6"
 };
 
 static struct retro_core_option_v2_definition option_def_core_sys_subfolder = {
@@ -714,41 +713,125 @@ static struct retro_core_option_v2_definition option_def_digital_joy_centering =
    "enabled"
 };
 
-static struct retro_core_option_v2_definition option_def_cpu_clock_scale = {
+static struct retro_core_option_v2_definition option_def_cpu_reverse_overclock = {
    APPNAME"_cpu_clock_scale",
-   "CPU Clock Scale",
+   "CPU Reverse OverClock",
    NULL,
    "Used to under or over clock the emulated CPU by a specified percentage.",
    NULL,
    NULL,
    {
       { "default", NULL },
+      { "19",     "19%" },
+      { "20",     "20%" },
+      { "21",     "21%" },
+      { "22",     "22%" },
+      { "23",     "23%" },
+      { "24",     "24%" },
       { "25",     "25%" },
+      { "26",     "26%" },
+      { "27",     "27%" },
+      { "28",     "28%" },
+      { "29",     "29%" },
       { "30",     "30%" },
+      { "31",     "31%" },
+      { "32",     "32%" },
+      { "33",     "33%" },
+      { "34",     "34%" },
       { "35",     "35%" },
+      { "36",     "36%" },
+      { "37",     "37%" },
+      { "38",     "38%" },
+      { "39",     "39%" },
       { "40",     "40%" },
+      { "41",     "41%" },
+      { "42",     "42%" },
+      { "43",     "43%" },
+      { "44",     "44%" },
       { "45",     "45%" },
+      { "46",     "46%" },
+      { "47",     "47%" },
+      { "48",     "48%" },
+      { "49",     "49%" },
       { "50",     "50%" },
+      { "51",     "51%" },
+      { "52",     "52%" },
+      { "53",     "53%" },
+      { "54",     "54%" },
       { "55",     "55%" },
+      { "56",     "56%" },
+      { "57",     "57%" },
+      { "58",     "58%" },
+      { "59",     "59%" },
       { "60",     "60%" },
+      { "61",     "61%" },
+      { "62",     "62%" },
+      { "63",     "63%" },
+      { "64",     "64%" },
       { "65",     "65%" },
+      { "66",     "66%" },
+      { "67",     "67%" },
+      { "68",     "68%" },
+      { "69",     "69%" },
       { "70",     "70%" },
+      { "71",     "71%" },
+      { "72",     "72%" },
+      { "73",     "73%" },
+      { "74",     "74%" },
       { "75",     "75%" },
+      { "76",     "76%" },
+      { "77",     "77%" },
+      { "78",     "78%" },
+      { "79",     "79%" },
       { "80",     "80%" },
+      { "81",     "81%" },
+      { "82",     "82%" },
+      { "83",     "83%" },
+      { "84",     "84%" },
       { "85",     "85%" },
+      { "86",     "86%" },
+      { "87",     "87%" },
+      { "88",     "88%" },
+      { "89",     "89%" },
       { "90",     "90%" },
+      { "91",     "91%" },
+      { "92",     "92%" },
+      { "93",     "93%" },
+      { "94",     "94%" },
       { "95",     "95%" },
-      { "105",   "105%" },
-      { "110",   "110%" },
-      { "115",   "115%" },
-      { "120",   "120%" },
-      { "125",   "125%" },
-      { "200",   "200%" },
-      { "250",   "250%" },
-      { "300",   "300%" },
+      { "96",     "96%" },
+      { "97",     "97%" },
+      { "98",     "98%" },
+      { "99",     "99%" },
+      { "100",    "100%" },
+      { "101",    "101%" },
+      { "102",    "102%" },
+      { "103",    "103%" },
+      { "104",    "104%" },
+      { "105",    "105%" },
+      { "106",    "106%" },
+      { "107",    "107%" },
+      { "108",    "108%" },
+      { "109",    "109%" },
+      { "110",    "110%" },
+      { "111",    "111%" },
+      { "112",    "112%" },
+      { "113",    "113%" },
+      { "114",    "114%" },
+      { "115",    "115%" },
+      { "116",    "116%" },
+      { "117",    "117%" },
+      { "118",    "118%" },
+      { "119",    "119%" },
+      { "120",    "120%" },
+      { "121",    "121%" },
+      { "122",    "122%" },
+      { "123",    "123%" },
+      { "124",    "124%" },
+      { "125",    "125%" },
       { NULL, NULL },
    },
-   "default"
+   "99"
 };
 
 static struct retro_core_option_v2_definition option_def_cyclone_mode = {
@@ -878,13 +961,13 @@ void init_core_options(void)
   default_options[OPT_SAMPLE_RATE]               = option_def_sample_rate;
   default_options[OPT_INPUT_INTERFACE]           = option_def_input_interface;
   default_options[OPT_MAME_REMAPPING]            = option_def_mame_remapping;
-  default_options[OPT_FRAMESKIP]                 = option_def_frameskip;
+  default_options[OPT_FRAMESKIP]                 = option_def_turboboost;
   default_options[OPT_CORE_SYS_SUBFOLDER]        = option_def_core_sys_subfolder;
   default_options[OPT_CORE_SAVE_SUBFOLDER]       = option_def_core_save_subfolder;
   default_options[OPT_AUTOSAVE_HISCORE]          = option_def_autosave_hiscore;
   default_options[OPT_CHEAT_INPUT_PORTS]         = option_def_cheat_input_ports;
   default_options[OPT_DIGITAL_JOY_CENTERING]     = option_def_digital_joy_centering;
-  default_options[OPT_CPU_CLOCK_SCALE]           = option_def_cpu_clock_scale;
+  default_options[OPT_CPU_CLOCK_SCALE]           = option_def_cpu_reverse_overclock;
   default_options[OPT_OVERRIDE_AD_STICK]         = option_def_override_ad_stick;
   default_options[OPT_INPUT_TOGGLE]              = option_def_input_toggle;
 #if (HAS_CYCLONE || HAS_DRZ80)
