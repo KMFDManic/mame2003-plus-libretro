@@ -563,6 +563,33 @@ static WRITE16_HANDLER(sonic_level_load_protection)
 		system32_workram[(CURRENT_LEVEL_STATUS + 2) / 2] = 0x0000;
 }
 
+/******************************************************************************
+ ******************************************************************************
+  The J.League 1994 (Japan)
+ ******************************************************************************
+ ******************************************************************************/
+static WRITE16_HANDLER( jleague_protection_w )
+{
+	COMBINE_DATA( &system32_workram[0xf700/2 + offset ] );
+
+	switch( offset )
+	{
+		/* Map team browser selection to opponent browser selection*/
+		/* using same lookup table that V60 uses for sound sample mapping.*/
+		case 0:
+			cpu_writemem24lew( 0x20f708, cpu_readmem24lew_word( 0x7bbc0 + data*2 ) );
+			break;
+
+		/* move on to team browser*/
+		case 4/2:
+			cpu_writemem24lew( 0x200016, data & 0xff );
+			break;
+
+		default:
+			break;
+	}
+}
+
 /* the protection board on many system32 games has full dma/bus access*/
 /* and can write things into work RAM.  we simulate that here for burning rival.*/
 static READ16_HANDLER(brival_protection_r)
@@ -1979,22 +2006,22 @@ INPUT_PORTS_START( sonic )
 	PORT_BIT( 0xff, IP_ACTIVE_LOW, IPT_UNKNOWN )
 
 	PORT_START /* 0xc00040 - port 7  - player 1 trackball X axis*/
-	PORT_ANALOG( 0xff, 0, IPT_TRACKBALL_X | IPF_PLAYER1 | IPF_REVERSE, 100, 15, 0, 0 )
+	PORT_ANALOG( 0xff, 0, IPT_TRACKBALL_X | IPF_PLAYER1 | IPF_REVERSE, 100, 25, 0, 0 )
 
 	PORT_START /* 0xc00044 - port 8  - player 1 trackball Y axis*/
-	PORT_ANALOG( 0xff, 0, IPT_TRACKBALL_Y | IPF_PLAYER1, 100, 15, 0, 0 )
+	PORT_ANALOG( 0xff, 0, IPT_TRACKBALL_Y | IPF_PLAYER1, 100, 25, 0, 0 )
 
 	PORT_START /* 0xc00048 - port 9  - player 2 trackball X axis*/
-	PORT_ANALOG( 0xff, 0, IPT_TRACKBALL_X | IPF_PLAYER2 | IPF_REVERSE, 100, 15, 0, 0 )
+	PORT_ANALOG( 0xff, 0, IPT_TRACKBALL_X | IPF_PLAYER2 | IPF_REVERSE, 100, 25, 0, 0 )
 
 	PORT_START /* 0xc0004c - port 10 - player 2 trackball Y axis*/
-	PORT_ANALOG( 0xff, 0, IPT_TRACKBALL_Y | IPF_PLAYER2, 100, 15, 0, 0 )
+	PORT_ANALOG( 0xff, 0, IPT_TRACKBALL_Y | IPF_PLAYER2, 100, 25, 0, 0 )
 
 	PORT_START /* 0xc00050 - port 11 - player 3 trackball X axis*/
-	PORT_ANALOG( 0xff, 0, IPT_TRACKBALL_X | IPF_PLAYER3 | IPF_REVERSE, 100, 15, 0, 0 )
+	PORT_ANALOG( 0xff, 0, IPT_TRACKBALL_X | IPF_PLAYER3 | IPF_REVERSE, 100, 25, 0, 0 )
 
 	PORT_START /* 0xc00054 - port 12 - player 3 trackball Y axis*/
-	PORT_ANALOG( 0xff, 0, IPT_TRACKBALL_Y | IPF_PLAYER3, 100, 15, 0, 0 )
+	PORT_ANALOG( 0xff, 0, IPT_TRACKBALL_Y | IPF_PLAYER3, 100, 25, 0, 0 )
 INPUT_PORTS_END
 
 INPUT_PORTS_START( jpark )
@@ -3442,6 +3469,38 @@ static DRIVER_INIT( arescue )
 
 }
 
+
+static UINT16 MemRead16_16(offs_t address)
+{
+	if (!(address & 1))
+		return cpu_readmem24lew_word(address);
+	else
+	{
+		UINT16 result = cpu_readmem24lew(address);
+		return result | cpu_readmem24lew(address + 1) << 8;
+	}
+}
+
+static void MemWrite16_16(offs_t address, UINT16 data)
+{
+	if (!(address & 1))
+		cpu_writemem24lew_word(address, data);
+	else
+	{
+		cpu_writemem24lew(address, data);
+		cpu_writemem24lew(address + 1, data >> 8);
+	}
+}
+
+
+#define program_read_byte  cpu_readmem24lew
+#define program_write_byte cpu_writemem24lew
+#define program_read_word   MemRead16_16
+#define program_write_word MemWrite16_16
+
+
+
+
 /******************************************************************************
  ******************************************************************************
   Dark Edge
@@ -3450,15 +3509,15 @@ static DRIVER_INIT( arescue )
 /* V60 24lew for 8-16bit mem calls i think */
 void darkedge_fd1149_vblank(void)
 {
-	/* program_write_word*/cpu_writemem24lew_word(0x20f072, 0);
-	/* program_write_word*/cpu_writemem24lew_word(0x20f082, 0);
+	 program_write_word(0x20f072, 0);
+	 program_write_word(0x20f082, 0);
 
-	if( /* program_read_byte*/cpu_readmem24lew(0x20a12c) != 0 )
+	if(  program_read_byte(0x20a12c) != 0 )
 	{
-		/* program_write_byte*/cpu_writemem24lew(0x20a12c, /* program_read_byte*/cpu_readmem24lew(0x20a12c)-1 );
+		 program_write_byte(0x20a12c, program_read_byte(0x20a12c)-1 );
 
-		if( /*program_read_byte*/cpu_readmem24lew(0x20a12c) == 0 )
-			/*program_read_byte*/cpu_writemem24lew(0x20a12e, 1);
+		if( program_read_byte(0x20a12c) == 0 )
+			program_write_byte(0x20a12e, 1);
 	}
 }
 
@@ -3492,7 +3551,7 @@ static DRIVER_INIT( darkedge )
 
 WRITE16_HANDLER( dbzvrvs_protection_w )
 {
-	/* program_write_word*/cpu_writemem24lew_word( 0x2080c8, /* program_read_word*/cpu_readmem24lew_word( 0x200044 ) );
+	program_write_word( 0x2080c8, program_read_word( 0x200044 ) );
 
 }
 
@@ -3502,7 +3561,14 @@ READ16_HANDLER( dbzvrvs_protection_r )
 	return 0xffff;
 }
 
-
+static DRIVER_INIT( jleague )
+{
+	system32_use_default_eeprom = EEPROM_SYS32_0;
+	multi32 = 0;
+	system32_temp_kludge = 0;
+	system32_mixerShift = 4;
+	install_mem_write16_handler(0, 0x20F700, 0x20F705, jleague_protection_w);
+}
 
 static DRIVER_INIT( dbzvrvs )
 {
@@ -3531,17 +3597,17 @@ GAMEX(1992, ga2,      0,        system32, ga2,      ga2,      ROT0, "Sega", "Gol
 GAMEX(1992, ga2j,     ga2,      system32, ga2j,     ga2,      ROT0, "Sega", "Golden Axe - The Revenge of Death Adder (Japan)", GAME_IMPERFECT_GRAPHICS )
 GAMEX(1992, brival,   0,        sys32_hi, brival,   brival,   ROT0, "Sega", "Burning Rival (Japan)", GAME_IMPERFECT_GRAPHICS )
 GAMEX(1992, sonic,    0,        sys32_hi, sonic,    sonic,    ROT0, "Sega", "Segasonic the Hedgehog (Japan rev. C)", GAME_IMPERFECT_GRAPHICS )
-GAMEX(1992, sonicp,   sonic,    sys32_hi, sonic,    sonicp,    ROT0, "Sega", "Segasonic the Hedgehog (Japan prototype)", GAME_IMPERFECT_GRAPHICS )
+GAMEX(1992, sonicp,   sonic,    sys32_hi, sonic,    sonicp,   ROT0, "Sega", "Segasonic the Hedgehog (Japan prototype)", GAME_IMPERFECT_GRAPHICS )
 GAMEX(1993, alien3,   0,        system32, alien3,   alien3,   ROT0, "Sega", "Alien3: The Gun", GAME_IMPERFECT_GRAPHICS )
 GAMEX(1994, jpark,    0,        jpark,    jpark,    jpark,    ROT0, "Sega", "Jurassic Park", GAME_IMPERFECT_GRAPHICS )
 GAMEX(1994, svf,      0,        system32, svf,      s32,      ROT0, "Sega", "Super Visual Football - European Sega Cup", GAME_IMPERFECT_GRAPHICS )
 GAMEX(1994, svs,      svf,      system32, svf,      s32,      ROT0, "Sega", "Super Visual Soccer - Sega Cup (US)", GAME_IMPERFECT_GRAPHICS )
-GAMEX(1994, jleague,  svf,      system32, svf,      s32,      ROT0, "Sega", "The J.League 1994 (Japan)", GAME_NOT_WORKING | GAME_UNEMULATED_PROTECTION )
+GAMEX(1994, jleague,  svf,      system32, svf,      jleague,  ROT0, "Sega", "The J.League 1994 (Japan)", GAME_IMPERFECT_GRAPHICS )
 GAMEX(1993, f1lap,    0,        system32, f1lap,	  f1sl,     ROT0, "Sega", "F1 Super Lap (World)", GAME_IMPERFECT_GRAPHICS )
 GAMEX(1993, f1lapj,   f1lap,    system32, f1lap,	  f1sl,     ROT0, "Sega", "F1 Super Lap (Japan)", GAME_IMPERFECT_GRAPHICS )
 
 /* not really working */
 GAMEX(1993, darkedge, 0,        sys32_hi, darkedge, darkedge, ROT0, "Sega", "Dark Edge", GAME_NOT_WORKING | GAME_UNEMULATED_PROTECTION ) /* locks up on some levels, sprites are submerged, protected */
-GAMEX(1994, dbzvrvs,  0,        sys32_hi, system32,	dbzvrvs,  ROT0, "Sega / Banpresto", "Dragon Ball Z V.R.V.S.", GAME_NOT_WORKING | GAME_UNEMULATED_PROTECTION ) /* does nothing useful, known to be heavily protected */
+GAMEX(1994, dbzvrvs,  0,        sys32_hi, system32,	dbzvrvs,  ROT0, "Sega / Banpresto", "Dragon Ball Z V.R.V.S.", GAME_IMPERFECT_GRAPHICS )
 GAMEX(1995, slipstrm, 0,        sys32_hi, slipstrm,	f1en,     ROT0, "Capcom", "Slipstream", GAME_IMPERFECT_GRAPHICS | GAME_NO_SOUND ) 
 /* Loony Toons (maybe) */
